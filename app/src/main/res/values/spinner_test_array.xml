@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="test_spinner">
+        <item>231321</item>
+        <item>adsadwq</item>
+        <item>231dqd321</item>
+        <item>czcxzb</item>
+    </string-array>
+</resources>

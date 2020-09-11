@@ -1,0 +1,227 @@
+const functions = require('firebase-functions');
+
+const admin = require('firebase-admin');
+admin.initializeApp();
+const db = admin.firestore();
+
+exports.createUser = functions.https.onCall(async (data) => {
+    try {
+        const userRecord = await admin.auth().createUser({
+            email: data.email,
+            password: data.password,
+            displayName: data.fullName
+        });
+        const currentTimestamp = admin.firestore.FieldValue.serverTimestamp();
+        const userInfo = {
+            email: data.email,
+            fullName: data.fullName,
+            userType: data.userType,
+            address: null,
+            birthday: null,
+            phone: null,
+            joinedTimestamp: currentTimestamp,
+            accountActive: true
+        };
+        if (data.userType === 'Player'){
+            userInfo.height = 0;
+            userInfo.weight = 0;
+            userInfo.introduction = null;
+            userInfo.preferredPositions = {
+                goalkeeper: false,
+                defender: false,
+                attackingMidfielder: false,
+                centreMidfielder: false,
+                defensiveMidfielder: false,
+                forwardAttacker: false,
+                centreAttacker: false
+            };
+            userInfo.location = {
+                longitude = -1,
+                latitude = -1
+            };
+            userInfo.schedules = [];
+        }
+        if (data.userType === 'Referee'){
+            userInfo.schedules = [];
+        }
+        await db.collection('users').doc(userRecord.uid).set(userInfo).catch((error) => {
+            return {
+                result: 0,
+                message: 'Add user into database failed',
+                errorCode: error.code,
+                errorMessage: error.message
+            }
+        });
+        return {
+            result: 1,
+            message: 'User created'
+        }
+
+    }
+    catch (error) {
+        return {
+            result: 0,
+            message: 'Create user failed',
+            errorCode: error.code,
+            errorMessage: error.message
+        }
+    }
+})
+
+exports.getUser = functions.https.onCall(async (uid) => {
+    const userRef = db.collection('users').doc(uid);
+    const userRecord = await userRef.get();
+    if (userRecord.exists) {
+        // return result
+        let result = userRecord.data();
+        result.id = uid;
+        // set photos
+        const userPhotosDocs = await userRef.collection('photos').get();
+        let photos = [];
+        if (!userPhotosDocs.empty) {
+            userPhotosDocs.forEach(photo => {
+                let photoData = photo.data();
+                photoData.id = photo.id;
+                photos.push(photoData);
+            });
+        }
+        result.photos = photos;
+
+        const userType = result.userType;
+        // Player information
+        if (userType === 'Player') {
+            // set joined teams
+            let joinedTeams = [];
+            const joinedTeamsDocs = await userRef.collection('joinedTeams').get();
+            if (!joinedTeamsDocs.empty) {
+                joinedTeamsDocs.forEach(joinedTeam => {
+                    let joinedTeamData = joinedTeam.data();
+                    joinTeamData.id = joinedTeam.id;
+                    joinedTeams.push(joinedTeamData);
+                });
+            }
+            result.joinedTeams = joinedTeams;
+            // set liked teams
+            let likedTeams = [];
+            const likedTeamsDocs = await userRef.collection('likedTeams').get();
+            if (!likedTeamsDocs.empty) {
+                likedTeamsDocs.forEach(likedTeam => {
+                    let likedTeamData = likedTeam.data();
+                    likedTeamData.id = likedTeam.id;
+                    likedTeams.push(likedTeamData);
+                });
+            }
+            result.likedTeams = likedTeams;
+            // set liked by teams
+            let likedByTeams = [];
+            const likedByTeamsDocs = await userRef.collection('likedByTeams').get();
+            if (!likedByTeamsDocs.empty) {
+                likedByTeamsDocs.forEach(likedByTeam => {
+                    let likedByTeamData = likedByTeam.data();
+                    likedByTeamData.id = likedByTeam.id;
+                    likedByTeams.push(likedByTeamsData);
+                });
+            }
+            result.likedByTeams = likedByTeams;
+        }
+        // Referee information
+        else if (userType === 'Referee') {
+            // Do nothing for now
+        }
+        
+        return result;
+    } else {
+        return null;
+    }
+})
+
+exports.getTeam = functions.https.onCall(async (teamId) => {
+    const teamRef = db.collection('teams').doc(teamId);
+    const teamRecord = await teamRef.get();
+    if (teamRecord.exists) {
+        // return result
+        let result = teamRecord.data();
+        result.id = teamId;
+        // set photos
+        const teamPhotoDocs = await teamRef.collection('photos').get();
+        let photos = [];
+        if (!teamPhotoDocs.empty) {
+            teamPhotoDocs.forEach(photo => {
+                let photoData = photo.data();
+                photoData.id = photo.id;
+                photos.push(photoData);
+            });
+        }
+        result.photos = photos;
+        // set team members
+        const teamMemberDocs = await teamRef.collection('teamMembers').get();
+        let teamMembers = [];
+        if (!teamMemberDocs.empty) {
+            teamMemberDocs.forEach((teamMember) => {
+                let teamMemberData = teamMember.data();
+                teamMemberData.id = teamMember.id;
+                teamMembers.push(teamMember);
+            })
+        }
+        result.teamMembers = teamMembers;
+        // set game history
+        const gameHistoryDocs = await teamRef.collection('gameHistory').get();
+        let gameHistory = [];
+        if (!gameHistoryDocs.empty) {
+            gameHistoryDocs.forEach((playedGame) => {
+                let playedGameData = playedGame.data();
+                playedGameData.id = playedGame.id;
+                gameHistory.push(playedGameData);
+            })
+        }
+        result.gameHistory = gameHistory;
+        // Set liked teams
+        let likedTeams = [];
+        const likedTeamsDocs = await teamRef.collection('likedTeams').get();
+        if (!likedTeamsDocs.empty) {
+            likedTeamsDocs.forEach(likedTeam => {
+                let likedTeamData = likedTeam.data();
+                likedTeamData.id = likedTeam.id;
+                likedTeams.push(likedTeamData);
+            });
+        }
+        result.likedTeams = likedTeams;
+        // set liked by teams
+        let likedByTeams = [];
+        const likedByTeamsDocs = await teamRef.collection('likedByTeams').get();
+        if (!likedByTeamsDocs.empty) {
+            likedByTeamsDocs.forEach(likedByTeam => {
+                let likedByTeamData = likedByTeam.data();
+                likedByTeamData.id = likedByTeam.id;
+                likedByTeams.push(likedByTeamData);
+            });
+        }
+        result.likedByTeams = likedByTeams;
+        // set liked players
+        let likedPlayers = [];
+        const likedPlayersDocs = await teamRef.collection('likedPlayers').get();
+        if (!likedPlayersDocs.empty) {
+            likedPlayersDocs.forEach(likedPlayer => {
+                let likedPlayerData = likedPlayer.data();
+                likedPlayerData.id = likedPlayer.id;
+                likedPlayers.push(likedPlayerData);
+            });
+        }
+        result.likedPlayers = likedPlayers;
+        // set liked by players
+        let likedByPlayers = [];
+        const likedByPlayersDocs = await teamRef.collection('likedByPlayers').get();
+        if (!likedByPlayersDocs.empty) {
+            likedByPlayersDocs.forEach(likedByPlayer => {
+                let likedByPlayerData = likedByPlayer.data();
+                likedByPlayerData.id = likedByPlayer.id;
+                likedByPlayers.push(likedByPlayerData);
+            });
+        }
+        result.likedByPlayers = likedByPlayers;
+        
+        return result;
+    } else {
+        return null;
+    }
+})

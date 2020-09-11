@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="team_match_type">
+        <item>Nearby</item>
+        <item>Suggested</item>
+    </string-array>
+</resources>
