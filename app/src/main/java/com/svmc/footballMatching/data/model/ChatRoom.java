@@ -1,7 +1,6 @@
 package com.svmc.footballMatching.data.model;
 
 import com.google.firebase.Timestamp;
-import com.svmc.footballMatching.data.model.user.User;
 
 import java.util.ArrayList;
 import java.util.List;

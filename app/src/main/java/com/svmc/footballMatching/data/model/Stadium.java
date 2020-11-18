@@ -7,8 +7,7 @@ public class Stadium {
     private String id;
     private String name;
     private Location location;
-    private List<Integer> numberOfPlayerEachTeamSupport = new ArrayList<>();
-    private long pricePerHour;
+    private int pricePerHour;
 
     public String getId() {
         return id;
@@ -34,19 +33,11 @@ public class Stadium {
         this.location = location;
     }
 
-    public List<Integer> getNumberOfPlayerEachTeamSupport() {
-        return numberOfPlayerEachTeamSupport;
-    }
-
-    public void setNumberOfPlayerEachTeamSupport(List<Integer> numberOfPlayerEachTeamSupport) {
-        this.numberOfPlayerEachTeamSupport = numberOfPlayerEachTeamSupport;
-    }
-
-    public long getPricePerHour() {
+    public int getPricePerHour() {
         return pricePerHour;
     }
 
-    public void setPricePerHour(long pricePerHour) {
+    public void setPricePerHour(int pricePerHour) {
         this.pricePerHour = pricePerHour;
     }
 }

@@ -1,7 +1,6 @@
 package com.svmc.footballMatching.data.model;
 
 import com.google.firebase.Timestamp;
-import com.svmc.footballMatching.data.model.user.Player;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -20,13 +19,14 @@ public class Team implements Serializable {
     private String status;
     private int mainGroup;
     private List<Integer> groups;
-    private Player leader;
+    private User leader;
     private List<TeamMember> teamMembers = new ArrayList<>();
     private List<Schedule> schedules = new ArrayList<>();
     private List<PlayedGame> gamesHistory = new ArrayList<>();
     private Statistics statistics;
     private List<LikedTeam> likedTeams = new ArrayList<>();
     private List<LikedTeam> likedByTeams = new ArrayList<>();
+    private Timestamp lastUpdateNotificationTimestamp;
     private List<LikedPlayer> likedPlayers = new ArrayList<>();
     private List<LikedPlayer> likedByPlayers = new ArrayList<>();
 
@@ -118,11 +118,11 @@ public class Team implements Serializable {
         this.groups = groups;
     }
 
-    public Player getLeader() {
+    public User getLeader() {
         return leader;
     }
 
-    public void setLeader(Player leader) {
+    public void setLeader(User leader) {
         this.leader = leader;
     }
 
@@ -174,6 +174,14 @@ public class Team implements Serializable {
         this.likedByTeams = likedByTeams;
     }
 
+    public Timestamp getLastUpdateNotificationTimestamp() {
+        return lastUpdateNotificationTimestamp;
+    }
+
+    public void setLastUpdateNotificationTimestamp(Timestamp lastUpdateNotificationTimestamp) {
+        this.lastUpdateNotificationTimestamp = lastUpdateNotificationTimestamp;
+    }
+
     public List<LikedPlayer> getLikedPlayers() {
         return likedPlayers;
     }
@@ -190,8 +198,34 @@ public class Team implements Serializable {
         this.likedByPlayers = likedByPlayers;
     }
 
+    public boolean isLikedByTeam(String teamId) {
+        for (LikedTeam likedTeam : likedByTeams) {
+            if (likedTeam.getTeam().getId().equals(teamId)) return true;
+        }
+        return false;
+    }
+
+    public boolean isLikedByPlayer(String uid) {
+        for (LikedPlayer likedPlayer : likedByPlayers) {
+            if (likedPlayer.getUser().getId().equals(uid)) return true;
+        }
+        return false;
+    }
+
+    public boolean isLeader(String uid) {
+        return leader.getId().equals(uid);
+    }
+
+    public boolean isPlayerInTeam(String uid) {
+        for (TeamMember teamMember : teamMembers) {
+            if (teamMember.getStatus().equals("joined") && teamMember.getPlayer().getId().equals(uid))
+                return true;
+        }
+        return false;
+    }
+
     public static class TeamMember {
-        private Player player;
+        private User player;
         private String title;
         private Timestamp invitedTimestamp;
         private Timestamp joinedTimestamp;
@@ -203,7 +237,7 @@ public class Team implements Serializable {
         public TeamMember() {
         }
 
-        public TeamMember(Player player, String title,
+        public TeamMember(User player, String title,
                           Timestamp invitedTimestamp, Timestamp joinedTimestamp,
                           String status, Timestamp leftTimestamp,
                           Timestamp kickedTimestamp, int showOrder) {
@@ -217,11 +251,11 @@ public class Team implements Serializable {
             this.showOrder = showOrder;
         }
 
-        public Player getPlayer() {
+        public User getPlayer() {
             return player;
         }
 
-        public void setPlayer(Player player) {
+        public void setPlayer(User player) {
             this.player = player;
         }
 
@@ -418,66 +452,26 @@ public class Team implements Serializable {
         }
     }
 
-    public static class LikedTeam {
-        private Team team;
-        private boolean liked;
-        private Timestamp actionTimestamp;
-
-
-        public LikedTeam() {
-        }
-
-        public LikedTeam(Team team, boolean liked, Timestamp actionTimestamp) {
-            this.team = team;
-            this.liked = liked;
-            this.actionTimestamp = actionTimestamp;
-        }
-
-        public Team getTeam() {
-            return team;
-        }
-
-        public void setTeam(Team team) {
-            this.team = team;
-        }
-
-        public boolean isLiked() {
-            return liked;
-        }
-
-        public void setLiked(boolean liked) {
-            this.liked = liked;
-        }
-
-        public Timestamp getActionTimestamp() {
-            return actionTimestamp;
-        }
-
-        public void setActionTimestamp(Timestamp actionTimestamp) {
-            this.actionTimestamp = actionTimestamp;
-        }
-    }
-
     public static class LikedPlayer {
-        private Player player;
+        private User user;
         private boolean liked;
         private Timestamp actionTimestamp;
 
         public LikedPlayer() {
         }
 
-        public LikedPlayer(Player player, boolean liked, Timestamp actionTimestamp) {
-            this.player = player;
+        public LikedPlayer(User user, boolean liked, Timestamp actionTimestamp) {
+            this.user = user;
             this.liked = liked;
             this.actionTimestamp = actionTimestamp;
         }
 
-        public Player getPlayer() {
-            return player;
+        public User getUser() {
+            return user;
         }
 
-        public void setPlayer(Player player) {
-            this.player = player;
+        public void setUser(User user) {
+            this.user = user;
         }
 
         public boolean isLiked() {

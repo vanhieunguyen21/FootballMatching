@@ -24,14 +24,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:contentDescription="@string/avatar"
-                android:src="@drawable/default_avatar" />
+                android:src="@drawable/default_team_avatar" />
 
             <TextView
                 android:id="@+id/name_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="2dp"
-                android:text="@string/team_name"
+                android:text="@{team.name}"
                 app:layout_constraintBottom_toBottomOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,14 +4,17 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
-            name="viewModel"
-            type="com.svmc.footballMatching.ui.team.teamProfile.TeamProfileViewModel" />
+            name="team"
+            type="com.svmc.footballMatching.data.model.Team" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@android:color/white">
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
@@ -28,7 +31,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="8dp"
-                    android:text="@{viewModel.teamLiveData.name}"
+                    android:text="@{team.name}"
                     android:textSize="30sp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toTopOf="@id/image_gallery_layout"
@@ -36,7 +39,7 @@
                     app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <LinearLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/image_gallery_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -48,9 +51,11 @@
                     app:layout_constraintTop_toBottomOf="@id/team_name_text_view">
 
                     <LinearLayout
+                        android:id="@+id/image_gallery_title_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
+                        app:layout_constraintBottom_toTopOf="@id/photos_gallery_recycler_view"
                         app:layout_constraintTop_toTopOf="parent">
 
                         <TextView
@@ -75,15 +80,18 @@
                             android:padding="3dp"
                             android:text="@string/edit"
                             android:textColor="@color/colorLink"
-                            android:textSize="16sp" />
+                            android:textSize="16sp"
+                            android:visibility="gone" />
                     </LinearLayout>
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/photos_gallery_recycler_view"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/image_gallery_title_layout" />
 
-                </LinearLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <View
                     android:id="@+id/divider1"
@@ -132,14 +140,15 @@
                             android:padding="3dp"
                             android:text="@string/edit"
                             android:textColor="@color/colorLink"
-                            android:textSize="16sp" />
+                            android:textSize="16sp"
+                            android:visibility="gone" />
                     </LinearLayout>
 
                     <TextView
                         android:id="@+id/introduction_text_view"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@{viewModel.teamLiveData.introduction}" />
+                        android:text="@{team.introduction}" />
                 </LinearLayout>
 
                 <View
@@ -178,7 +187,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginVertical="5dp"
                         android:drawablePadding="10dp"
-                        android:text="@{@string/skills + `: ` + viewModel.teamLiveData.statistics.skillsString}"
+                        android:text="@{@string/skills + `: ` + team.statistics.skillsString}"
                         app:drawableStartCompat="@drawable/ic_skills" />
 
                     <TextView
@@ -187,7 +196,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginVertical="5dp"
                         android:drawablePadding="10dp"
-                        android:text="@{@string/fair_play + `: ` + viewModel.teamLiveData.statistics.fairPlayString}"
+                        android:text="@{@string/fair_play + `: ` + team.statistics.fairPlayString}"
                         app:drawableStartCompat="@drawable/ic_fair_play" />
 
                     <TextView
@@ -196,7 +205,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginVertical="5dp"
                         android:drawablePadding="10dp"
-                        android:text="@{@string/wins + `: ` + viewModel.teamLiveData.statistics.numberOfWins}"
+                        android:text="@{@string/wins + `: ` + team.statistics.numberOfWins}"
                         app:drawableStartCompat="@drawable/ic_win" />
 
                     <TextView
@@ -205,7 +214,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginVertical="5dp"
                         android:drawablePadding="10dp"
-                        android:text="@{@string/losses + `: ` + viewModel.teamLiveData.statistics.numberOfLosses}"
+                        android:text="@{@string/losses + `: ` + team.statistics.numberOfLosses}"
                         app:drawableStartCompat="@drawable/ic_loss" />
                 </LinearLayout>
 
@@ -220,7 +229,7 @@
                     app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/team_details_layout" />
 
-                <LinearLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/team_members_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -232,9 +241,11 @@
 
 
                     <LinearLayout
+                        android:id="@+id/team_members_title_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
+                        app:layout_constraintBottom_toTopOf="@id/team_members_recycler_view"
                         app:layout_constraintTop_toTopOf="parent">
 
                         <TextView
@@ -259,21 +270,122 @@
                             android:padding="3dp"
                             android:text="@string/manage"
                             android:textColor="@color/colorLink"
-                            android:textSize="16sp" />
+                            android:textSize="16sp"
+                            android:visibility="gone" />
                     </LinearLayout>
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/team_members_recycler_view"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
+                        android:layout_height="wrap_content"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/team_members_title_layout" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
 
-        <FrameLayout
-            android:id="@+id/container"
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/app_bar_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:id="@+id/title"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="start|center_vertical"
+                        android:maxLines="1"
+                        android:text="@string/team"
+                        android:textColor="@android:color/white"
+                        android:textSize="25sp"
+                        android:textStyle="bold"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent" />
+
+                </LinearLayout>
+            </androidx.appcompat.widget.Toolbar>
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/request_join_fab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="18dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="18dp"
+                android:layout_marginBottom="18dp"
+                android:src="@drawable/ic_join_24"
+                android:visibility="gone"
+                app:backgroundTint="@color/colorPrimary"
+                app:fabCustomSize="60dp"
+                app:layout_constraintBottom_toTopOf="@id/message_fab"
+                app:layout_constraintRight_toRightOf="parent"
+                app:tint="@android:color/white" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/message_fab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="18dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="18dp"
+                android:layout_marginBottom="18dp"
+                android:src="@drawable/ic_mail_outline_white_24"
+                android:visibility="gone"
+                app:backgroundTint="@color/colorPrimary"
+                app:fabCustomSize="60dp"
+                app:layout_constraintBottom_toTopOf="@id/like_fab"
+                app:layout_constraintRight_toRightOf="parent"
+                app:tint="@android:color/white" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/like_fab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="18dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="18dp"
+                android:layout_marginBottom="18dp"
+                android:src="@drawable/ic_thumb_up_white_24"
+                android:visibility="gone"
+                app:backgroundTint="@color/colorPrimary"
+                app:fabCustomSize="60dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:tint="@android:color/white" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/loading_layout"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/white">
+
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

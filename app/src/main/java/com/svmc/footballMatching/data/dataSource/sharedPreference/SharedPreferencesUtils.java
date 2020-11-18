@@ -2,7 +2,7 @@ package com.svmc.footballMatching.data.dataSource.sharedPreference;
 
 import android.content.SharedPreferences;
 
-import com.svmc.footballMatching.data.model.user.User;
+import com.svmc.footballMatching.data.model.User;
 
 public class SharedPreferencesUtils {
     public static User sharedPreferencesToUser(SharedPreferences sharedPreferences) {

@@ -6,19 +6,24 @@ import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.functions.HttpsCallableResult;
+import com.svmc.footballMatching.callBackInterface.GetUserCallBack;
+import com.svmc.footballMatching.callBackInterface.LikeTeamCallBack;
 import com.svmc.footballMatching.callBackInterface.LoginCallBack;
+import com.svmc.footballMatching.callBackInterface.QueryPlayersCallBack;
 import com.svmc.footballMatching.callBackInterface.RegisterCallBack;
 import com.svmc.footballMatching.callBackInterface.UpdateProfileCallBack;
 import com.svmc.footballMatching.data.model.Location;
 import com.svmc.footballMatching.data.model.Photo;
-import com.svmc.footballMatching.data.model.user.Player;
-import com.svmc.footballMatching.data.model.user.Referee;
-import com.svmc.footballMatching.data.model.user.User;
+import com.svmc.footballMatching.data.model.User;
 import com.svmc.footballMatching.data.session.Session;
 
 import static com.svmc.footballMatching.util.MapUtils.*;
@@ -45,13 +50,12 @@ public class UserDataSource {
         return instance;
     }
 
-    public void register(String email, String password, String fullName, String userType, final RegisterCallBack callBack) {
+    public void register(String email, String password, String fullName, final RegisterCallBack callBack) {
         Log.d(TAG, "register");
         Map<String, Object> data = new HashMap<>();
         data.put("email", email);
         data.put("password", password);
         data.put("fullName", fullName);
-        data.put("userType", userType);
         functions.getHttpsCallable("createUser")
                 .call(data)
                 .addOnSuccessListener(new OnSuccessListener<HttpsCallableResult>() {
@@ -106,11 +110,11 @@ public class UserDataSource {
                 Object data = httpsCallableResult.getData();
                 if (data != null) {
                     Map<String, Object> userRecord = (HashMap<String, Object>) data;
-                    User user = userRecordToUser(userRecord);
+                    User user = mapToUser(userRecord);
                     if (user != null) {
                         callBack.onSuccess(user, loginRequestCode);
                     } else {
-                        callBack.onFailure("Unknown user type");
+                        callBack.onFailure("Unknown error");
                     }
                 }
             }
@@ -124,114 +128,31 @@ public class UserDataSource {
         });
     }
 
+    public void getUser(String uid, final GetUserCallBack callBack) {
+        functions.getHttpsCallable("getUser").call(uid).addOnSuccessListener(new OnSuccessListener<HttpsCallableResult>() {
+            @Override
+            public void onSuccess(HttpsCallableResult httpsCallableResult) {
+                Object data = httpsCallableResult.getData();
+                if (data != null) {
+                    Map<String, Object> userRecord = (HashMap<String, Object>) data;
+                    User user = mapToUser(userRecord);
+                    if (user != null) {
+                        callBack.onSuccess(user);
+                    } else {
+                        callBack.onFailure("Unknown error");
+                    }
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                callBack.onFailure(e.getMessage());
+            }
+        });
+    }
+
     public void logout() {
         auth.signOut();
-    }
-
-    @SuppressWarnings("unchecked")
-    private User userRecordToUser(Map<String, Object> userRecord) {
-        String userType = valueToStringOrNull(userRecord, "userType");
-        User user;
-        switch (userType) {
-            case "Player":
-                user = new Player();
-                user = setPlayerInformation(user, userRecord);
-                break;
-            case "Referee":
-                user = new Referee();
-                user = setRefereeInformation(user, userRecord);
-                break;
-            case "Other":
-                user = new User();
-                break;
-            default:
-                return null;
-        }
-        // Set id
-        user.setId(valueToStringOrNull(userRecord, "id"));
-        // Set email
-        user.setEmail(valueToStringOrNull(userRecord, "email"));
-        // Set full name
-        user.setFullName(valueToStringOrNull(userRecord, "fullName"));
-        // Set photos
-        List<Photo> photos = new ArrayList<>();
-        ArrayList<Map<String, Object>> photoMaps = (ArrayList<Map<String, Object>>) userRecord.get("photos");
-        for (Map<String, Object> photoMap : photoMaps) {
-            Photo photo = mapToPhoto(photoMap);
-            photos.add(photo);
-        }
-        user.setPhotos(photos);
-        //Set address
-        user.setAddress(valueToStringOrNull(userRecord, "address"));
-        // Set birthday
-        Map<String, Object> birthdayMap = (Map<String, Object>) userRecord.get("birthday");
-        if (birthdayMap != null) user.setBirthday(mapToTimestamp(birthdayMap));
-        // Set phone
-        user.setPhone(valueToStringOrNull(userRecord, "phone"));
-        // Set joined timestamp
-        user.setJoinedTimestamp(mapToTimestamp((Map<String, Object>) userRecord.get("joinedTimestamp")));
-        // Set active status
-        user.setAccountActive(valueToBooleanOrFalse(userRecord, "accountActive"));
-
-        return user;
-    }
-
-    @SuppressWarnings("unchecked")
-    private User setPlayerInformation(User user, Map<String, Object> userRecord) {
-        Player player = (Player) user;
-        // Set height
-        player.setHeight(valueToIntOrZero(userRecord, "height"));
-        // Set weight
-        player.setWeight(valueToIntOrZero(userRecord, "weight"));
-        // Set introduction
-        player.setIntroduction(valueToStringOrNull(userRecord, "introduction"));
-        // Set preferred positions
-        player.setPreferredPositions((Map<String, Object>) userRecord.get("preferredPositions"));
-        // Set schedule
-        // TODO
-        // Set location
-        Map<String, Object> locationMap = (Map<String, Object>) userRecord.get("location");
-        if (locationMap != null) {
-            Double longitude = valueToDoubleOrNull(locationMap, "longitude");
-            Double latitude = valueToDoubleOrNull(locationMap, "latitude");
-            String geoHash = valueToStringOrNull(locationMap, "geoHash");
-            if (longitude != null && latitude != null)
-                player.setLocation(new Location(longitude, latitude, geoHash));
-        }
-        // Set joined teams
-        List<Player.JoinedTeam> joinedTeams = new ArrayList<>();
-        ArrayList<Map<String, Object>> joinedTeamMaps = (ArrayList<Map<String, Object>>) userRecord.get("joinedTeams");
-        if (joinedTeamMaps != null) {
-            for (Map<String, Object> joinedTeamMap : joinedTeamMaps) {
-                Player.JoinedTeam joinedTeam = mapToJoinedTeam(joinedTeamMap);
-                joinedTeams.add(joinedTeam);
-            }
-        }
-        player.setJoinedTeams(joinedTeams);
-        // Set liked teams
-        List<Player.LikedTeam> likedTeams = new ArrayList<>();
-        ArrayList<Map<String, Object>> likedTeamMaps = (ArrayList<Map<String, Object>>) userRecord.get("likedTeams");
-        for (Map<String, Object> likedTeamMap : likedTeamMaps) {
-            Player.LikedTeam likedTeam = mapToLikedTeam(likedTeamMap);
-            likedTeams.add(likedTeam);
-        }
-        player.setLikedTeams(likedTeams);
-        // Set liked by teams
-        List<Player.LikedTeam> likedByTeams = new ArrayList<>();
-        ArrayList<Map<String, Object>> likedByTeamMaps = (ArrayList<Map<String, Object>>) userRecord.get("likedByTeams");
-        for (Map<String, Object> likedByTeamMap : likedByTeamMaps) {
-            Player.LikedTeam likedTeam = mapToLikedTeam(likedByTeamMap);
-            likedTeams.add(likedTeam);
-        }
-        player.setLikedByTeams(likedTeams);
-        return player;
-    }
-
-    private User setRefereeInformation(User user, Map<String, Object> userRecord) {
-        Referee referee = (Referee) user;
-        // Set schedule
-        // TODO
-        return referee;
     }
 
     public boolean isLoggedIn() {
@@ -262,5 +183,72 @@ public class UserDataSource {
                 callBack.onFailure(e.getMessage());
             }
         });
+    }
+
+    public void likeTeam(String playerId, String destinationTeamId, final LikeTeamCallBack callBack) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("playerId", playerId);
+        data.put("destinationTeamId", destinationTeamId);
+        functions.getHttpsCallable("match-playerLikeTeam").call(data).addOnSuccessListener(new OnSuccessListener<HttpsCallableResult>() {
+            @Override
+            public void onSuccess(HttpsCallableResult httpsCallableResult) {
+                Map<String, Object> result = (Map<String, Object>) httpsCallableResult.getData();
+                if (result != null) {
+                    if ((int) result.get("result") == 1) {
+                        callBack.onSuccess();
+                    } else {
+                        String message = (String) result.get("errorMessage");
+                        callBack.onFailure(message);
+                    }
+                } else {
+                    callBack.onFailure("Unknown error");
+                }
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                callBack.onFailure(e.getMessage());
+            }
+        });
+    }
+
+    public void queryAllPlayers(String myId, String myTeamId, final QueryPlayersCallBack callBack) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("myId", myId);
+        data.put("myTeamId", myTeamId);
+        functions.getHttpsCallable("queryAllPlayers").call(data).addOnSuccessListener(new OnSuccessListener<HttpsCallableResult>() {
+            @Override
+            public void onSuccess(HttpsCallableResult httpsCallableResult) {
+                Map<String, Object> data = (Map<String, Object>) httpsCallableResult.getData();
+                ArrayList<Map<String, Object>> playerMaps = (ArrayList<Map<String, Object>>) data.get("result");
+                List<User> players = new ArrayList<>();
+                if (playerMaps != null) {
+                    for (Map<String, Object> playerMap : playerMaps) {
+                        User player = mapToUser(playerMap);
+                        if (player != null) players.add(player);
+                    }
+                }
+                callBack.onSuccess(players);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                callBack.onFailure(e.getMessage());
+            }
+        });
+    }
+
+    public void updateLastUpdateNotification(String uid) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("lastUpdateNotification", Timestamp.now());
+        db.collection("teams").document(uid).update(data);
+    }
+
+    public ListenerRegistration listenToPlayerLikedByTeams(String uid, EventListener<QuerySnapshot> eventListener) {
+        return db.collection("users")
+                .document(uid)
+                .collection("likedByTeams")
+                .addSnapshotListener(eventListener);
     }
 }

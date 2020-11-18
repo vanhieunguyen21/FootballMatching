@@ -14,18 +14,15 @@ exports.createUser = functions.https.onCall(async (data) => {
         const userInfo = {
             email: data.email,
             fullName: data.fullName,
-            userType: data.userType,
             address: null,
             birthday: null,
             phone: null,
             joinedTimestamp: currentTimestamp,
-            accountActive: true
-        };
-        if (data.userType === 'Player'){
-            userInfo.height = 0;
-            userInfo.weight = 0;
-            userInfo.introduction = null;
-            userInfo.preferredPositions = {
+            accountActive: true,
+            height: 0,
+            weight: 0,
+            introduction: null,
+            preferredPositions: {
                 goalkeeper: false,
                 defender: false,
                 attackingMidfielder: false,
@@ -33,13 +30,9 @@ exports.createUser = functions.https.onCall(async (data) => {
                 defensiveMidfielder: false,
                 forwardAttacker: false,
                 centreAttacker: false
-            };
-            userInfo.location = null;
-            userInfo.schedules = [];
-        }
-        if (data.userType === 'Referee'){
-            userInfo.schedules = [];
-        }
+            },
+            location: null
+        };
         await db.collection('users').doc(userRecord.uid).set(userInfo).catch((error) => {
             return {
                 result: 0,

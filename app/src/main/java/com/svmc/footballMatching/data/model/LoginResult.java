@@ -1,7 +1,6 @@
 package com.svmc.footballMatching.data.model;
 
 import com.svmc.footballMatching.data.enumeration.Result;
-import com.svmc.footballMatching.data.model.user.User;
 
 public class LoginResult {
     int loginRequestCode;

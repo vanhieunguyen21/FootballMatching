@@ -1,28 +1,25 @@
 package com.svmc.footballMatching.data.model;
 
 import com.google.firebase.Timestamp;
-import com.svmc.footballMatching.data.model.user.Referee;
 
 public class Schedule {
     private String id;
     private Timestamp createdTimestamp;
     private Timestamp gameTimestamp;
-    private Stadium location;
+    private Stadium stadium;
     private Team team1;
     private Team team2;
-    private Referee referee;
 
     public Schedule() {
     }
 
-    public Schedule(String id, Timestamp createdTimestamp, Timestamp gameTimestamp, Stadium location, Team team1, Team team2, Referee referee) {
+    public Schedule(String id, Timestamp createdTimestamp, Timestamp gameTimestamp, Stadium stadium, Team team1, Team team2) {
         this.id = id;
         this.createdTimestamp = createdTimestamp;
         this.gameTimestamp = gameTimestamp;
-        this.location = location;
+        this.stadium = stadium;
         this.team1 = team1;
         this.team2 = team2;
-        this.referee = referee;
     }
 
     public String getId() {
@@ -49,12 +46,12 @@ public class Schedule {
         this.gameTimestamp = gameTimestamp;
     }
 
-    public Stadium getLocation() {
-        return location;
+    public Stadium getStadium() {
+        return stadium;
     }
 
-    public void setLocation(Stadium location) {
-        this.location = location;
+    public void setStadium(Stadium stadium) {
+        this.stadium = stadium;
     }
 
     public Team getTeam1() {
@@ -73,11 +70,4 @@ public class Schedule {
         this.team2 = team2;
     }
 
-    public Referee getReferee() {
-        return referee;
-    }
-
-    public void setReferee(Referee referee) {
-        this.referee = referee;
-    }
 }

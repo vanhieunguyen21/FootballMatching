@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="joinedTeam"
+            type="com.svmc.footballMatching.data.model.User.JoinedTeam" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/avatar_image_view"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                app:civ_border_color="#00000000"
+                android:src="@drawable/default_team_avatar"
+                app:civ_border_width="1dp"
+                android:padding="5dp"/>
+
+            <TextView
+                android:id="@+id/full_name_text_view"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="5dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="@{joinedTeam.team.name}"
+                android:textColor="@android:color/black"
+                android:textSize="20sp" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</layout>

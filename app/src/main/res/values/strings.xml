@@ -77,4 +77,10 @@
     <string name="manage">Manage</string>
     <string name="promote_team_introduction">Write something about your team</string>
     <string name="team">Team</string>
+    <string name="my_teams">My Teams</string>
+    <string name="creating_team">Creating team...</string>
+    <string name="match_history">Match History</string>
+    <string name="find_team">Find Team</string>
+    <string name="player">Player</string>
+    <string name="registering">Registering...</string>
 </resources>

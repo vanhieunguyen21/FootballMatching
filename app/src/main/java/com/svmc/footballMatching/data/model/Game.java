@@ -1,23 +1,23 @@
 package com.svmc.footballMatching.data.model;
 
 import com.google.firebase.Timestamp;
-import com.svmc.footballMatching.data.model.user.Player;
-import com.svmc.footballMatching.data.model.user.Referee;
-import com.svmc.footballMatching.data.model.user.User;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 public class Game {
     private String id;
     private Team team1;
     private Team team2;
-    private Referee referee;
     private Schedule schedule;
-    private int team1Score;
-    private int team2Score;
-    private List<PenaltyCard> penaltyCards = new ArrayList<>();
-    private List<GameRating> gameRatings = new ArrayList<>();
+    @Nullable
+    private Integer team1Score;
+    @Nullable
+    private Integer team2Score;
+    private GameRating team1Rating;
+    private GameRating team2Rating;
     private List<GameComment> gameComments = new ArrayList<>();
 
     public String getId() {
@@ -44,14 +44,6 @@ public class Game {
         this.team2 = team2;
     }
 
-    public Referee getReferee() {
-        return referee;
-    }
-
-    public void setReferee(Referee referee) {
-        this.referee = referee;
-    }
-
     public Schedule getSchedule() {
         return schedule;
     }
@@ -60,36 +52,36 @@ public class Game {
         this.schedule = schedule;
     }
 
-    public int getTeam1Score() {
+    public Integer getTeam1Score() {
         return team1Score;
     }
 
-    public void setTeam1Score(int team1Score) {
+    public void setTeam1Score(Integer team1Score) {
         this.team1Score = team1Score;
     }
 
-    public int getTeam2Score() {
+    public Integer getTeam2Score() {
         return team2Score;
     }
 
-    public void setTeam2Score(int team2Score) {
+    public void setTeam2Score(Integer team2Score) {
         this.team2Score = team2Score;
     }
 
-    public List<PenaltyCard> getPenaltyCards() {
-        return penaltyCards;
+    public GameRating getTeam1Rating() {
+        return team1Rating;
     }
 
-    public void setPenaltyCards(List<PenaltyCard> penaltyCards) {
-        this.penaltyCards = penaltyCards;
+    public void setTeam1Rating(GameRating team1Rating) {
+        this.team1Rating = team1Rating;
     }
 
-    public List<GameRating> getGameRatings() {
-        return gameRatings;
+    public GameRating getTeam2Rating() {
+        return team2Rating;
     }
 
-    public void setGameRatings(List<GameRating> gameRatings) {
-        this.gameRatings = gameRatings;
+    public void setTeam2Rating(GameRating team2Rating) {
+        this.team2Rating = team2Rating;
     }
 
     public List<GameComment> getGameComments() {
@@ -100,97 +92,27 @@ public class Game {
         this.gameComments = gameComments;
     }
 
-    public static class PenaltyCard {
-        private Player toPlayer;
-        private Team inTeam;
-        private String cardType;
-        private Timestamp givenTimestamp;
-
-        public PenaltyCard() {
-        }
-
-        public PenaltyCard(Player toPlayer, Team inTeam, String cardType, Timestamp givenTimestamp) {
-            this.toPlayer = toPlayer;
-            this.inTeam = inTeam;
-            this.cardType = cardType;
-            this.givenTimestamp = givenTimestamp;
-        }
-
-        public Player getToPlayer() {
-            return toPlayer;
-        }
-
-        public void setToPlayer(Player toPlayer) {
-            this.toPlayer = toPlayer;
-        }
-
-        public Team getInTeam() {
-            return inTeam;
-        }
-
-        public void setInTeam(Team inTeam) {
-            this.inTeam = inTeam;
-        }
-
-        public String getCardType() {
-            return cardType;
-        }
-
-        public void setCardType(String cardType) {
-            this.cardType = cardType;
-        }
-
-        public Timestamp getGivenTimestamp() {
-            return givenTimestamp;
-        }
-
-        public void setGivenTimestamp(Timestamp givenTimestamp) {
-            this.givenTimestamp = givenTimestamp;
-        }
-    }
-
     public static class GameRating {
-        private User fromUser;
-        private String userType;
-        private Team inTeam;
+        private int team1Score;
+        private int team2Score;
         private double fairPlay;
         private double skills;
         private String comment;
 
-        public GameRating() {
+        public int getTeam1Score() {
+            return team1Score;
         }
 
-        public GameRating(User fromUser, String userType, Team inTeam, double fairPlay, double skills, String comment) {
-            this.fromUser = fromUser;
-            this.userType = userType;
-            this.inTeam = inTeam;
-            this.fairPlay = fairPlay;
-            this.skills = skills;
-            this.comment = comment;
+        public void setTeam1Score(int team1Score) {
+            this.team1Score = team1Score;
         }
 
-        public User getFromUser() {
-            return fromUser;
+        public int getTeam2Score() {
+            return team2Score;
         }
 
-        public void setFromUser(User fromUser) {
-            this.fromUser = fromUser;
-        }
-
-        public String getUserType() {
-            return userType;
-        }
-
-        public void setUserType(String userType) {
-            this.userType = userType;
-        }
-
-        public Team getInTeam() {
-            return inTeam;
-        }
-
-        public void setInTeam(Team inTeam) {
-            this.inTeam = inTeam;
+        public void setTeam2Score(int team2Score) {
+            this.team2Score = team2Score;
         }
 
         public double getFairPlay() {

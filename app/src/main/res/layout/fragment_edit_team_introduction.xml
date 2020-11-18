@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-
+        <import type="com.svmc.footballMatching.data.session.CurrentTeam"/>
         <variable
             name="viewModel"
             type="com.svmc.footballMatching.ui.team.teamProfile.EditTeamIntroductionViewModel" />
@@ -37,7 +37,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:gravity="start"
-                        android:text="@{viewModel.teamLiveData.introduction}"
+                        android:text="@{CurrentTeam.getInstance().myTeamLiveData.introduction}"
                         android:inputType="textMultiLine" />
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>

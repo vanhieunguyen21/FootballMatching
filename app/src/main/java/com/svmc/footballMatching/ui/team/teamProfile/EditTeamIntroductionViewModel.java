@@ -17,16 +17,19 @@ import com.svmc.footballMatching.data.session.CurrentTeam;
 import java.util.Map;
 
 public class EditTeamIntroductionViewModel extends ViewModel {
+    private Team team;
     private TeamRepository teamRepository = TeamRepository.getInstance();
-    public LiveData<Team> teamLiveData = Transformations.map(CurrentTeam.getInstance().getTeamLiveData(), new Function<Team, Team>() {
-        @Override
-        public Team apply(Team input) {
-            return input;
-        }
-    });
 
     private MutableLiveData<Result> resultLiveData = new MutableLiveData<>(null);
     private String resultMessage = null;
+
+    public EditTeamIntroductionViewModel(Team team) {
+        this.team = team;
+    }
+
+    public Team getTeam() {
+        return team;
+    }
 
     public LiveData<Result> getResultLiveData() {
         return resultLiveData;
@@ -37,7 +40,7 @@ public class EditTeamIntroductionViewModel extends ViewModel {
     }
 
     public void updateTeamProfile(Map<String, Object> updateIntroduction) {
-        teamRepository.updateTeamProfile(teamLiveData.getValue().getId(), updateIntroduction, new UpdateProfileCallBack() {
+        teamRepository.updateTeamProfile(team.getId(), updateIntroduction, new UpdateProfileCallBack() {
             @Override
             public void onSuccess() {
                 resultLiveData.setValue(Result.SUCCESS);
@@ -49,5 +52,23 @@ public class EditTeamIntroductionViewModel extends ViewModel {
                 resultLiveData.setValue(Result.FAILURE);
             }
         });
+    }
+
+    public static class EditTeamIntroductionViewModelFactory implements ViewModelProvider.Factory {
+        private Team team;
+
+        public EditTeamIntroductionViewModelFactory(Team team) {
+            this.team = team;
+        }
+
+        @NonNull
+        @Override
+        public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+            if (modelClass.isAssignableFrom(EditTeamIntroductionViewModel.class)) {
+                return (T) new EditTeamIntroductionViewModel(team);
+            } else {
+                throw new IllegalArgumentException("Unknown ViewModel class");
+            }
+        }
     }
 }

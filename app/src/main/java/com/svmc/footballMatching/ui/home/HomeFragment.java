@@ -16,8 +16,11 @@ import android.view.ViewGroup;
 import com.svmc.footballMatching.R;
 import com.svmc.footballMatching.data.session.Session;
 import com.svmc.footballMatching.databinding.FragmentHomeBinding;
-import com.svmc.footballMatching.ui.personalProfile.PlayerPersonalProfileFragment;
-import com.svmc.footballMatching.ui.team.teamHome.TeamHomeFragment;
+import com.svmc.footballMatching.ui.MainActivity;
+import com.svmc.footballMatching.ui.account.LoginFragment;
+import com.svmc.footballMatching.ui.account.match.PlayerFindTeamsFragment;
+import com.svmc.footballMatching.ui.account.personalProfile.UserProfileFragment;
+import com.svmc.footballMatching.ui.team.myTeams.MyTeamsFragment;
 
 public class HomeFragment extends Fragment {
     private FragmentHomeBinding binding;
@@ -39,10 +42,27 @@ public class HomeFragment extends Fragment {
     private void initComponents(Context context) {
         inflateMenu();
 
-        binding.button.setOnClickListener(new View.OnClickListener() {
+        binding.myTeamsCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                replaceWithTeamHomeFragment();
+                MainActivity mainActivity = (MainActivity) getActivity();
+                mainActivity.replaceFragment(new MyTeamsFragment(), true, null, null);
+            }
+        });
+
+        binding.findTeamCardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MainActivity mainActivity = (MainActivity) getActivity();
+                mainActivity.replaceFragment(new PlayerFindTeamsFragment(), true, null, null);
+            }
+        });
+
+        binding.personalProfileCardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MainActivity mainActivity = (MainActivity) getActivity();
+                mainActivity.replaceFragment(new UserProfileFragment(), true, null, null);
             }
         });
     }
@@ -52,12 +72,14 @@ public class HomeFragment extends Fragment {
         binding.toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
+                MainActivity mainActivity = (MainActivity) getActivity();
                 switch (item.getItemId()) {
                     case R.id.profile:
-                        addProfileFragment();
+                        mainActivity.replaceFragment(new UserProfileFragment(), true, null, null);
                         break;
                     case R.id.logout:
                         Session.getInstance().logout();
+                        mainActivity.replaceFragment(new LoginFragment(), false, null, null);
                         break;
                 }
                 return true;
@@ -65,19 +87,11 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    private void addProfileFragment() {
+    private void detach() {
+        getParentFragmentManager().popBackStack();
         getParentFragmentManager()
                 .beginTransaction()
-                .add(R.id.container, new PlayerPersonalProfileFragment(), null)
-                .addToBackStack(null)
-                .commit();
-    }
-
-    private void replaceWithTeamHomeFragment() {
-        getParentFragmentManager()
-                .beginTransaction()
-                .replace(R.id.container, new TeamHomeFragment(), "teamHome")
-                .addToBackStack(null)
+                .detach(this)
                 .commit();
     }
 }

@@ -11,8 +11,7 @@ import androidx.lifecycle.ViewModel;
 import com.svmc.footballMatching.R;
 import com.svmc.footballMatching.callBackInterface.LoginCallBack;
 import com.svmc.footballMatching.data.enumeration.Result;
-import com.svmc.footballMatching.data.model.LoginResult;
-import com.svmc.footballMatching.data.model.user.User;
+import com.svmc.footballMatching.data.model.User;
 import com.svmc.footballMatching.data.repository.UserRepository;
 import com.svmc.footballMatching.data.session.Session;
 

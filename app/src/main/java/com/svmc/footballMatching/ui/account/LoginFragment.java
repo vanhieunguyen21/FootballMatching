@@ -23,8 +23,6 @@ import android.widget.Toast;
 
 import com.svmc.footballMatching.R;
 import com.svmc.footballMatching.data.enumeration.Result;
-import com.svmc.footballMatching.data.model.LoginResult;
-import com.svmc.footballMatching.data.model.user.User;
 import com.svmc.footballMatching.data.session.Session;
 import com.svmc.footballMatching.databinding.CustomLoadingLayoutBinding;
 import com.svmc.footballMatching.databinding.FragmentLoginBinding;

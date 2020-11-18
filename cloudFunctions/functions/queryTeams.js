@@ -55,7 +55,7 @@ exports.querySuggestedTeams = functions.https.onCall(async (query) => {
     //     });
     //     if (count == limit) break;
     // });
-    return returnResult;
+    return {result: returnResult};
 })
 
 exports.queryNearbyTeams = functions.https.onCall(async (query) => {
@@ -85,5 +85,49 @@ exports.queryNearbyTeams = functions.https.onCall(async (query) => {
         result.id = teamRecord.id;
         returnResult.push(result);
     });
-    return returnResult;
+    return {result: returnResult};
+})
+
+exports.queryAllTeams = functions.https.onCall(async(myTeamId) => {
+    const teams = await db.collection('teams').get();
+    let returnResult = [];
+    teams.forEach((teamRecord) => {
+        // team result
+        if (myTeamId !== teamRecord.id){
+            let result = teamRecord.data();
+            result.id = teamRecord.id;
+            returnResult.push(result);
+        }
+    });
+    return {
+        result: returnResult
+    };
+})
+
+exports.queryNotJoinedTeams = functions.https.onCall(async (uid) => {
+    let i;
+    const teams = await db.collection('teams').get();
+    const returnResult = [];
+    /* eslint-disable no-await-in-loop */
+    for (i = 0 ; i < teams.docs.length ; i++) {
+        let joined = true;
+        const teamRecord = teams.docs[i];
+        const teamMemberRecord = await db.collection('teams').doc(teamRecord.id).collection('teamMembers').doc(uid).get();
+        if (teamMemberRecord.exists){
+            joined = true;
+            const status = teamMemberRecord.data().status;
+            if (status !== 'joined') joined = false;
+        } else {
+            joined = false;
+        }
+        if (!joined){
+            const result = teamRecord.data();
+            result.id = teamRecord.id;
+            returnResult.push(result);
+        }
+    }
+    /* eslint-enable no-await-in-loop */
+    return {
+        result: returnResult
+    }
 })

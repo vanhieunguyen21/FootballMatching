@@ -6,7 +6,7 @@
 
         <variable
             name="user"
-            type="com.svmc.footballMatching.data.model.user.User" />
+            type="com.svmc.footballMatching.data.model.User" />
     </data>
 
     <LinearLayout

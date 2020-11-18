@@ -3,6 +3,7 @@ package com.svmc.footballMatching.ui.team.teamProfile;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.svmc.footballMatching.R;
 import com.svmc.footballMatching.data.enumeration.Result;
 import com.svmc.footballMatching.data.model.Team;
+import com.svmc.footballMatching.data.session.CurrentTeam;
 import com.svmc.footballMatching.databinding.CustomLoadingLayoutBinding;
 import com.svmc.footballMatching.databinding.FragmentEditTeamIntroductionBinding;
 
@@ -25,6 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class EditTeamIntroductionFragment extends Fragment {
+    private final String TAG = "EditTeamIntroduction";
     private FragmentEditTeamIntroductionBinding binding;
     private EditTeamIntroductionViewModel viewModel;
 
@@ -36,7 +39,6 @@ public class EditTeamIntroductionFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentEditTeamIntroductionBinding.inflate(inflater);
         binding.setLifecycleOwner(this);
-        viewModel = new ViewModelProvider(this).get(EditTeamIntroductionViewModel.class);
         binding.setViewModel(viewModel);
         return binding.getRoot();
     }
@@ -44,6 +46,23 @@ public class EditTeamIntroductionFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        Bundle args = getArguments();
+        if (args == null) {
+            Log.d(TAG, "Null arguments");
+            detach();
+            return;
+        }
+        Team team = (Team) args.getSerializable("team");
+        if (team == null) {
+            Log.d(TAG, "Null team");
+            detach();
+            return;
+        }
+        EditTeamIntroductionViewModel.EditTeamIntroductionViewModelFactory factory
+                = new EditTeamIntroductionViewModel.EditTeamIntroductionViewModelFactory(team);
+        viewModel = new ViewModelProvider(this, factory).get(EditTeamIntroductionViewModel.class);
+
         initComponents(view.getContext());
         observeLiveData(view.getContext());
     }
@@ -54,15 +73,14 @@ public class EditTeamIntroductionFragment extends Fragment {
         binding.toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getParentFragmentManager().popBackStack();
-                getParentFragmentManager().beginTransaction().detach(EditTeamIntroductionFragment.this).commit();
+                detach();
             }
         });
 
         binding.resetImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                binding.introductionTextInputEditText.setText(viewModel.teamLiveData.getValue().getIntroduction());
+                binding.introductionTextInputEditText.setText(CurrentTeam.getInstance().getMyTeamLiveData().getValue().getIntroduction());
             }
         });
 

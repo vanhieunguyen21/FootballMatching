@@ -17,10 +17,10 @@
             android:id="@+id/register_form_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
             android:layout_marginTop="40dp"
             android:background="@android:color/white"
             android:paddingHorizontal="20dp"
-            android:layout_marginHorizontal="10dp"
             android:paddingTop="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -107,7 +107,7 @@
                         android:layout_height="wrap_content"
                         android:background="@android:color/white"
                         android:hint="@string/full_name_required"
-                        app:layout_constraintBottom_toTopOf="@id/user_type_text_input_layout"
+                        app:layout_constraintBottom_toTopOf="@id/register_button"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintRight_toRightOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/confirm_password_text_input_layout"
@@ -121,56 +121,6 @@
                             android:maxLines="1" />
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:id="@+id/user_type_text_input_layout"
-                        android:layout_width="match_parent"
-                        android:layout_height="60dp"
-                        android:layout_marginBottom="10dp"
-                        app:layout_constraintBottom_toTopOf="@id/register_button"
-                        app:layout_constraintLeft_toLeftOf="parent"
-                        app:layout_constraintRight_toRightOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/full_name_text_input_layout">
-
-                        <androidx.constraintlayout.widget.ConstraintLayout
-                            android:id="@+id/box_layout"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/spinner_input_layout_box"
-                            app:layout_constraintBottom_toBottomOf="parent">
-
-                            <ImageView
-                                android:layout_width="26dp"
-                                android:layout_height="26dp"
-                                android:layout_margin="10dp"
-                                android:src="@drawable/ic_outline_person_24"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintLeft_toLeftOf="parent"
-                                app:layout_constraintTop_toTopOf="parent"
-                                tools:ignore="ContentDescription" />
-
-                            <Spinner
-                                android:layout_width="match_parent"
-                                android:layout_height="52dp"
-                                android:entries="@array/user_type"
-                                android:paddingStart="44dp"
-                                android:paddingEnd="0dp"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
-                        </androidx.constraintlayout.widget.ConstraintLayout>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:background="@android:color/white"
-                            android:paddingHorizontal="3dp"
-                            android:text="@string/user_type"
-                            android:textSize="12sp"
-                            app:layout_constraintBottom_toTopOf="@id/box_layout"
-                            app:layout_constraintLeft_toLeftOf="parent"
-                            app:layout_constraintTop_toTopOf="@id/box_layout" />
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-
                     <Button
                         android:id="@+id/register_button"
                         android:layout_width="match_parent"
@@ -179,7 +129,7 @@
                         android:text="@string/register"
                         android:textColor="@android:color/white"
                         app:layout_constraintBottom_toTopOf="@id/register_note_text_view"
-                        app:layout_constraintTop_toBottomOf="@id/user_type_text_input_layout" />
+                        app:layout_constraintTop_toBottomOf="@id/full_name_text_input_layout" />
 
                     <TextView
                         android:id="@+id/register_note_text_view"
